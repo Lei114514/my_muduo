@@ -1,14 +1,14 @@
-## 项目介绍
+## **项目介绍**
 本项目是参考muduo实现的基于主从Reactor模型的多线程网络库。使用C++11编写去除muduo对boost的依赖。
 
 
-## 开发环境
+## **开发环境**
 - Ubuntu 22.04.2 LTS
 - gcc (Ubuntu 11.4.0-1ubuntu1~22.04.2) 11.4.0
 - cmake version 3.22.1
 
 
-## 功能板块
+## **功能板块**
 基础板块:
 - Logger: 日志板块, 有多个日志等级, DEBUG级可以自定义是否打印
 - Noncopyable: 删除拷贝函数和赋值运算符的类, 对于不想被复制的类可以继承它
@@ -49,9 +49,9 @@ Reactor模型:
 - EventLoopThreadPool: 封装线程池
 
 
-## 项目运行
+## **项目运行**
 
 
 
-## 致谢
+## **致谢**
 https://github.com/youngyangyang04/muduo-core

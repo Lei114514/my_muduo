@@ -2,6 +2,8 @@
 #include <unistd.h>
 
 #include "Channel.h"
+#include "EventLoop.h"
+#include "Logger.h"
 
 const int Channel::kNonoEvent=0;
 const int Channel::kReadEvent=EPOLLIN | EPOLLPRI;
@@ -10,8 +12,8 @@ const int Channel::kWriteEvent=EPOLLOUT;
 Channel::Channel(EventLoop* loop,int fd):
     fd_(fd),
     loop_(loop),
-    event_(kNonoEvent),
-    revent_(kNonoEvent),
+    events_(kNonoEvent),
+    revents_(kNonoEvent),
     index_(-1),
     tied_(false)
 {
@@ -40,7 +42,9 @@ void Channel::handleEvent(Timestamp receiveTime)
 
 void Channel::handleEventWithGuard(Timestamp receiveTime)
 {
-    if(revent_ & EPOLLERR)
+    LOG_DEBUG("channel handleEvent revents:%d\n", revents_);
+
+    if(revents_ & EPOLLERR)
     {
         if(errorCallback_) 
         {
@@ -48,7 +52,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         }
     }
 
-    if(revent_ & EPOLLHUP && !(revent_& EPOLLIN)) //對端關閉
+    if(revents_ & EPOLLHUP && !(revents_& EPOLLIN)) //對端關閉
     {
         if(closeCallback_) 
         {
@@ -56,7 +60,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         }
     }
 
-    if(revent_ & (EPOLLIN | EPOLLPRI))
+    if(revents_ & (EPOLLIN | EPOLLPRI))
     {
         if(readCallback_) 
         {
@@ -64,7 +68,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
         }
     }
 
-    if(revent_ & EPOLLOUT)
+    if(revents_ & EPOLLOUT)
     {
         if(writeCallback_) 
         {

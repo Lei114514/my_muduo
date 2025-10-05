@@ -9,13 +9,13 @@ const int Channel::kNonoEvent=0;
 const int Channel::kReadEvent=EPOLLIN | EPOLLPRI;
 const int Channel::kWriteEvent=EPOLLOUT;
 
-Channel::Channel(EventLoop* loop,int fd):
-    fd_(fd),
-    loop_(loop),
-    events_(kNonoEvent),
-    revents_(kNonoEvent),
-    index_(-1),
-    tied_(false)
+Channel::Channel(EventLoop* loop,int fd)
+    :fd_(fd)
+    ,loop_(loop)
+    ,events_(kNonoEvent)
+    ,revents_(kNonoEvent)
+    ,index_(-1)
+    ,tied_(false)
 {
 
 }

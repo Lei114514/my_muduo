@@ -1,10 +1,10 @@
-set(BASE_SOURCES 
-    Logger.cc
+set(NET_SOURCES 
+    Channel.cc
     #每實現一個就新增一個
 )
 
-add_library(Base STATIC ${BASE_SOURCES})
+add_library(Net STATIC ${NET_SOURCES})
 
+target_include_directories(Net PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-target_include_directories(Base PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
+target_link_libraries(Net PUBLIC Base)

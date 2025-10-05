@@ -3,35 +3,36 @@
 #include <string>
 #include "noncopyable.h"
 
-#define LOG_INFO(logFormat, ...)                                  \
-    do                                                            \
-    {                                                             \
-        Logger& logger=Logger::instance();                        \
-        char buf[1024]={'\0'};                                    \
-        snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);        \
-        logger.log(LogLevel::INFO,buf);                           \
+#define LOG_INFO(logFormat, ...)                                      \
+    do                                                                \
+    {                                                                 \
+        Logger& logger=Logger::instance();                            \
+        char buf[1024]={'\0'};                                        \
+        snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);            \
+        logger.log(LogLevel::INFO,buf);                               \
     } while (0)
 
-#define LOG_ERROR(logFormat,...)                                  \
+#define LOG_ERROR(logFormat,...)                                      \
     do{                                                               \
-        Logger& logger=Logger::instance();                      \
+        Logger& logger=Logger::instance();                            \
         char buf[1024]={'\0'};                                        \
         snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);            \
         logger.log(LogLevel::ERROR,buf);                              \
     }while(0)
 
-#define LOG_FATAL(logFormat,...)                                  \
+#define LOG_FATAL(logFormat,...)                                      \
     do{                                                               \ 
-        Logger& logger=Logger::instance();                      \
+        Logger& logger=Logger::instance();                            \
         char buf[1024]={'\0'};                                        \
         snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);            \
         logger.log(LogLevel::FATAL,buf);                              \
+        exit(-1);                                                     \
     }while(0)
 
 #ifdef DEBUG
-#define LOG_DEBUG(logFormat,...)                                  \
+#define LOG_DEBUG(logFormat,...)                                      \
     do{                                                               \
-        Logger& logger=Logger::instance();                      \
+        Logger& logger=Logger::instance();                            \
         char buf[1024]={'\0'};                                        \
         snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);            \
         logger.log(LogLevel::DEBUG,buf);                              \

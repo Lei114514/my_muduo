@@ -9,7 +9,7 @@
         Logger& logger=Logger::instance();                            \
         char buf[1024]={'\0'};                                        \
         snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);            \
-        logger.log(LogLevel::INFO,buf);                               \
+        logger.log(LogLevel::INFO,__FILE__,__LINE__,__func__,buf);                               \
     } while (0)
 
 #define LOG_ERROR(logFormat,...)                                      \
@@ -17,7 +17,7 @@
         Logger& logger=Logger::instance();                            \
         char buf[1024]={'\0'};                                        \
         snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);            \
-        logger.log(LogLevel::ERROR,buf);                              \
+        logger.log(LogLevel::ERROR,__FILE__,__LINE__,__func__,buf);                              \
     }while(0)
 
 #define LOG_FATAL(logFormat,...)                                      \
@@ -25,7 +25,7 @@
         Logger& logger=Logger::instance();                            \
         char buf[1024]={'\0'};                                        \
         snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);            \
-        logger.log(LogLevel::FATAL,buf);                              \
+        logger.log(LogLevel::FATAL,__FILE__,__LINE__,__func__,buf);                              \
         exit(-1);                                                     \
     }while(0)
 
@@ -35,7 +35,7 @@
         Logger& logger=Logger::instance();                            \
         char buf[1024]={'\0'};                                        \
         snprintf(buf,sizeof(buf),logFormat,##__VA_ARGS__);            \
-        logger.log(LogLevel::DEBUG,buf);                              \
+        logger.log(LogLevel::DEBUG,__FILE__,__LINE__,__func__,buf);                              \
     }while(0)
 #else
 #define LOG_DEBUG(logFormat,...);
@@ -53,5 +53,5 @@ class Logger: public noncopyable
 {
 public:
     static Logger& instance();
-    void log(LogLevel logLevel, const std::string& message);
-};  
+    void log(LogLevel logLevel,const char* file,int line,const char* func, const std::string& message);
+};

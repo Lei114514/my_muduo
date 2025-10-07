@@ -4,6 +4,7 @@
 #include <functional>
 #include <atomic>
 #include <mutex>
+#include <memory>
 
 #include "noncopyable.h"
 #include "Timestamp.h"

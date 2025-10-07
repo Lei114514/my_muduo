@@ -29,7 +29,7 @@
         exit(-1);                                                     \
     }while(0)
 
-#ifdef DEBUG
+#ifdef MYDEBUG
 #define LOG_DEBUG(logFormat,...)                                      \
     do{                                                               \
         Logger& logger=Logger::instance();                            \
@@ -40,6 +40,7 @@
 #else
 #define LOG_DEBUG(logFormat,...);
 #endif
+
 
 enum class LogLevel
 {

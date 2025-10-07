@@ -41,10 +41,10 @@ public:
     bool isWriting() const {return events_ & kWriteEvent;};
     bool isNoneEvent() const {return events_ == kNonoEvent;}
 
-    void setReadCallback(ReadEventCallback& cb) {readCallback_=move(cb);}
-    void setWriteCallback(EventCallback& cb) {writeCallback_=move(cb);}
-    void setCloseCallback(EventCallback& cb) {closeCallback_=move(cb);}
-    void setErrorCallback(EventCallback& cb) {errorCallback_=move(cb);}
+    void setReadCallback(ReadEventCallback& cb) {readCallback_=std::move(cb);}
+    void setWriteCallback(EventCallback& cb) {writeCallback_=std::move(cb);}
+    void setCloseCallback(EventCallback& cb) {closeCallback_=std::move(cb);}
+    void setErrorCallback(EventCallback& cb) {errorCallback_=std::move(cb);}
 
 private:
     static const int kNonoEvent;

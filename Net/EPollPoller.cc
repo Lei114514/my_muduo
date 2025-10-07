@@ -1,4 +1,7 @@
 #include <sys/epoll.h>
+#include <cerrno>
+#include <vector>
+
 #include <unistd.h>
 #include <cstring>
 
@@ -35,7 +38,7 @@ Timestamp EPollPoller::poll(int timeoutMs,ChannelList* activeChannels)
     Timestamp now=Timestamp::now();
     int saveErrno=errno;
     if(numEvents>0)
-    {   
+    {
         LOG_DEBUG("%d events happend",numEvents);
         fillActiveChannels(numEvents,activeChannels);
         if(numEvents==events_.size())
@@ -47,7 +50,7 @@ Timestamp EPollPoller::poll(int timeoutMs,ChannelList* activeChannels)
     {
         LOG_INFO("timeout!");
     }
-    else 
+    else
     {
         if(saveErrno!=EINTR)
         {
@@ -70,9 +73,9 @@ void EPollPoller::updateChannel(Channel* channel)
             int fd=channel->fd();
             channels_[fd]=channel;
         }
-        else 
+        else
         {
-
+            //因為如果是delete狀態, 那麼就是還在channels_中
         }
         channel->set_index(kAdded);
         update(EPOLL_CTL_ADD,channel);
@@ -85,13 +88,13 @@ void EPollPoller::updateChannel(Channel* channel)
             update(EPOLL_CTL_DEL,channel);
             channel->set_index(kDeleted);
         }
-        else 
+        else
         {
             update(EPOLL_CTL_MOD,channel);
         }
     }
 }
-void EPollPoller::removeChannel(Channel* channel) 
+void EPollPoller::removeChannel(Channel* channel)
 {
     if(!hasChannel(channel))
     {
@@ -135,8 +138,8 @@ void EPollPoller::update(int operation,Channel* channel)
         if(operation==EPOLL_CTL_DEL)
         {
             LOG_INFO("epoll_ctl del error:%d\n",errno);
-        }   
-        else 
+        }
+        else
         {
             LOG_FATAL("epoll_ctl add/mod error:%d\n",errno);
         }

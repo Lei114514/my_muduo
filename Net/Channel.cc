@@ -83,14 +83,14 @@ void Channel::tie(const std::shared_ptr<void*> &tie)
     tied_ = true;
 }
 
-void Channel::remove()  //待實現, 因為需要通過EventLoop來實現
+void Channel::remove() 
 {
-    
+    loop_->removeChannel(this);
 }
 
-void Channel::update()  //同上
+void Channel::update()  
 {
-
+    loop_->updateChannel(this);
 }
 
 

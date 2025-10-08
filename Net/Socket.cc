@@ -15,11 +15,11 @@ Socket::~Socket()
     ::close(sockfd_);
 }
 
-void Socket::bindAddress(const InetAddress* localAddr)
+void Socket::bindAddress(const InetAddress& localAddr)
 {
-    if(bind(sockfd_,reinterpret_cast<const struct sockaddr*>(localAddr->getSockAddr()),sizeof(sockaddr_in)))
+    if(bind(sockfd_,reinterpret_cast<const struct sockaddr*>(localAddr.getSockAddr()),sizeof(sockaddr_in)))
     {
-        LOG_FATAL("bind sockfd:%d fail, address=%s",sockfd_,localAddr->toIpPort().c_str());
+        LOG_FATAL("bind sockfd:%d fail, address=%s",sockfd_,localAddr.toIpPort().c_str());
     }
 }
 void Socket::listen()

@@ -91,7 +91,7 @@ void Socket::setKeepAlive(bool on)
 //     int fd=socket(AF_INET,SOCK_STREAM,0);
 //     Socket sockfd(fd);
 //     InetAddress addr(PORT);
-//     sockfd.bindAddress(&addr);
+//     sockfd.bindAddress(addr);
 //     sockfd.listen();
 
 //     InetAddress peerAddr;
@@ -108,7 +108,7 @@ void Socket::setKeepAlive(bool on)
 //     Socket sockfd(fd);
 
 //     InetAddress addr(PORT+1);
-//     sockfd.bindAddress(&addr);
+//     sockfd.bindAddress(addr);
 
 //     InetAddress peerAddr(PORT);
 //     connect(fd,reinterpret_cast<sockaddr*>(&peerAddr),sizeof(peerAddr));

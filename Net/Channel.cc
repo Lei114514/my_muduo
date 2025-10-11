@@ -42,7 +42,7 @@ void Channel::handleEvent(Timestamp receiveTime)
 
 void Channel::handleEventWithGuard(Timestamp receiveTime)
 {
-    LOG_DEBUG("channel handleEvent revents:%d\n", revents_);
+    LOG_DEBUG("channel handleEvent revents:%d", revents_);
 
     if(revents_ & EPOLLERR)
     {

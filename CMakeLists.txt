@@ -18,3 +18,7 @@ add_subdirectory(Net)
 # 測試Reactor板块的代碼
 # add_executable(reactor_test test/reactor.cc)
 # target_link_libraries(reactor_test PRIVATE Net Base)
+
+# 測試Net板块的代碼
+add_executable(Net_test test/Net.cc)
+target_link_libraries(Net_test PRIVATE Net Base)

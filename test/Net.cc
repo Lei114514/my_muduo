@@ -6,12 +6,14 @@
 #include <netinet/ip.h> /* superset of previous */
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "Acceptor.h"
 #include "Logger.h" 
 #include "InetAddress.h"
 #include "Acceptor.h"
 #include "EventLoop.h"
+#include "Buffer.h"
 
 #define IP "192.168.232.137"
 #define PORT 8899
@@ -27,14 +29,13 @@ void server()
     Acceptor acceptor{g_loop,addr,true};
 
     std::shared_ptr<Channel> clientChannel = nullptr;  //使用share_ptr
-
+    Buffer buffer{};
     int readfd=-1;
 
-    auto readEventCallback=[&clientChannel](Timestamp)->void{
-        char buf[128];
-        ::memset(buf,0,sizeof(buf));
-        ::read(clientChannel->fd(),buf,sizeof(buf));
-        printf("%s\n",buf); 
+    auto readEventCallback=[&clientChannel,&buffer](Timestamp)->void{
+        int saveErrno = 0;
+        buffer.readFd(clientChannel->fd(),&saveErrno);
+        cout<<buffer.retrieveAsString(buffer.readableBytes())<<endl;
     };
     auto writeEventCallback=[]()
     {
@@ -77,10 +78,16 @@ void client()
         cout<<"connect error"<<endl;
     }
 
-    const char buf[]="hello world";
-    ::write(fd,buf,sizeof(buf));
-    cout<<"complete send message"<<endl;
-    ::sleep(100);
+    
+    std::string message="hello world ";
+    while(true)
+    {
+        message+=message;
+        ::write(fd,message.c_str(),message.length());
+        ::sleep(1);
+        printf("send message, size=%d\n",message.length());
+    }
+
     ::close(fd);
     cout<<"client exit"<<endl;
 }

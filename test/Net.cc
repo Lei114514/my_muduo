@@ -136,7 +136,7 @@ void client()
     while(true)
     {
         memset(buf,0,sizeof(buf));
-        ::read(fd,buf,sizeof(buf));
+        ::read(fd,buf,sizeof(buf)-1);
         cout<<buf<<endl;
         ::sleep(5);
     }

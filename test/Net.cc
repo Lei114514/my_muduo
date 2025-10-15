@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <fcntl.h>
 
 #include "Acceptor.h"
 #include "Logger.h" 
@@ -14,51 +15,84 @@
 #include "Acceptor.h"
 #include "EventLoop.h"
 #include "Buffer.h"
+#include "TcpConnection.h"
 
 #define IP "192.168.232.137"
 #define PORT 8899
 
-EventLoop* g_loop=new EventLoop{};
-
 using std::cout;
 using std::endl;
 
-void server()
+void echoServer() 
 {
+    EventLoop* loop=new EventLoop{};
     InetAddress addr(PORT,IP);
-    Acceptor acceptor{g_loop,addr,true};
+    Acceptor acceptor{loop,addr,true};
+    int fileFd=::open("../test/test.txt",O_RDONLY);  //在build目錄下cmake..
 
-    std::shared_ptr<Channel> clientChannel = nullptr;  //使用share_ptr
-    Buffer buffer{};
-    int readfd=-1;
+    TcpConnectionPtr clientConnection=nullptr;
 
-    auto readEventCallback=[&clientChannel,&buffer](Timestamp)->void{
-        int saveErrno = 0;
-        buffer.readFd(clientChannel->fd(),&saveErrno);
-        cout<<buffer.retrieveAsString(buffer.readableBytes())<<endl;
+    /*
+    //測試send
+    MessageCallback messageCallback=[](const TcpConnectionPtr& tcpConnection,Buffer* buffer,Timestamp)->void{
+        std::string buf(buffer->peek(),buffer->readableBytes());
+        buf+="!!!!";
+        buffer->retrieve(buffer->readableBytes());
+        cout<<"EchoServer receive:"<<buf<<endl;
+        tcpConnection->send(buf);
     };
-    auto writeEventCallback=[]()
-    {
-        //測試Acceptor不需要寫
+    */
+
+    //測試sendFile
+    MessageCallback messageCallback=[&clientConnection,fileFd](const TcpConnectionPtr& tcpConnection,Buffer* buffer,Timestamp)->void{
+        std::string buf(buffer->peek(),buffer->readableBytes());
+        buf+="!!!!";
+        buffer->retrieve(buffer->readableBytes());
+        cout<<"EchoServer receive:"<<buf<<endl;
+        
+        int tmpFd=open("../test/test.txt",O_RDONLY);
+        int count=lseek(tmpFd,0,SEEK_END);
+        close(tmpFd);
+        clientConnection->sendFile(fileFd,0,count);
     };
 
-    auto newConnectionCallback=[&clientChannel,readEventCallback,writeEventCallback,&readfd](int fd,const InetAddress& peerAddr)->void
+    ConnectionCallback connectionCallback=[](const TcpConnectionPtr &connection)->void{
+        LOG_DEBUG("create TcpConnection");
+    };
+
+    WriteCompleteCallback writeCompleteCallback=[](const TcpConnectionPtr &connection)->void{
+        LOG_DEBUG("writeCompleteCallback");
+    };
+
+    CloseCallback closeCallback=[](const TcpConnectionPtr& connect)->void{
+        LOG_DEBUG("CloseCallback");
+    };
+
+    auto newConnectionCallback=[&clientConnection,&loop,&messageCallback,&connectionCallback,&writeCompleteCallback,&closeCallback,fileFd](int fd,const InetAddress& peerAddr)->void
     {
         LOG_DEBUG("running newConnectionCallback");
-        clientChannel= std::make_shared<Channel>(g_loop,fd);
-        clientChannel->setReadCallback(readEventCallback);
-        clientChannel->enableReading();
-        //clientChannel->setWriteCallback(writeEventCallback);
-        //clientChannel->enableWriting();
+        clientConnection= std::make_shared<TcpConnection>(loop,
+                                                          "TcpConnection1",
+                                                          fd,
+                                                          InetAddress(PORT,IP),
+                                                          peerAddr);
+
+        clientConnection->setMessageCallback(messageCallback);
+        clientConnection->setConnectionCallback(connectionCallback);
+        clientConnection->setWriteCompleteCallback(writeCompleteCallback);
+        clientConnection->setCloseCallback(closeCallback);
+        clientConnection->connectEstablished();
     };
+
     cout<<"before setNewconnetionCallback"<<endl;
     acceptor.setNewConnectionCallback(newConnectionCallback);
     cout<<"after SetNewConnectionCallback"<<endl;
     acceptor.listen();
     cout<<"after listen"<<endl;
 
-    g_loop->loop();
+    loop->loop();
     cout<<"server exit"<<endl;
+    close(fileFd);
 }
 
 void client()
@@ -78,14 +112,33 @@ void client()
         cout<<"connect error"<<endl;
     }
 
-    
+    /*
+    //測試send函數
     std::string message="hello world ";
+    char buf[64*1024];
     while(true)
     {
-        message+=message;
         ::write(fd,message.c_str(),message.length());
         ::sleep(1);
-        printf("send message, size=%d\n",message.length());
+
+        memset(buf,0,sizeof(buf));
+        ::read(fd,buf,sizeof(buf));
+        cout<<buf<<endl;
+        printf("receive message:%s\n",buf);
+        ::sleep(5);
+    }
+    */
+
+    //測試sendFile
+    std::string begin="begin";
+    char buf[64*1024];
+    ::write(fd,begin.c_str(),begin.length());
+    while(true)
+    {
+        memset(buf,0,sizeof(buf));
+        ::read(fd,buf,sizeof(buf));
+        cout<<buf<<endl;
+        ::sleep(5);
     }
 
     ::close(fd);
@@ -96,7 +149,7 @@ int main()
 {
     std::thread s([]()
     {
-        server();
+        echoServer();
     });
     std::thread c([](){
         client();

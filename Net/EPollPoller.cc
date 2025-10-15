@@ -32,7 +32,7 @@ EPollPoller::~EPollPoller()
 
 Timestamp EPollPoller::poll(int timeoutMs,ChannelList* activeChannels)
 {
-    LOG_DEBUG("epollfd=%d, total count:%d",epollfd_,events_.size());
+    LOG_DEBUG("epollfd=%d, total count:%ld",epollfd_,events_.size());
 
     int numEvents=epoll_wait(epollfd_,events_.data(),static_cast<int>(events_.size()),timeoutMs);
     Timestamp now=Timestamp::now();

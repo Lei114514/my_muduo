@@ -22,7 +22,7 @@ ssize_t Buffer::readFd(int fd, int* saveErrno)
     if( n < 0 )
     {
         *saveErrno = errno;
-        LOG_ERROR("buffer readv error, fd=%d, errno=%d",fd,saveErrno);
+        LOG_ERROR("buffer readv error, fd=%d, errno=%d",fd,*saveErrno);
     }
     else if( n < writable )
     {

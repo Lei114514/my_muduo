@@ -29,7 +29,7 @@ public:
 
     void handleEvent(Timestamp receiveTime);
 
-    void tie(const std::shared_ptr<void*> &);
+    void tie(const std::shared_ptr<void> &);
 
     void enableReading() {events_ |= kReadEvent; update();}
     void enableWriting() {events_ |= kWriteEvent; update();}

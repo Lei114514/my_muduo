@@ -77,7 +77,7 @@ void Channel::handleEventWithGuard(Timestamp receiveTime)
     }
 }
 
-void Channel::tie(const std::shared_ptr<void*> &tie)
+void Channel::tie(const std::shared_ptr<void> &tie)
 {
     tie_ = tie;
     tied_ = true;

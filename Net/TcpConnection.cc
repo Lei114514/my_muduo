@@ -24,15 +24,15 @@ TcpConnection::TcpConnection(EventLoop* loop
             , int sockfd
             , const InetAddress &localAddr
             , const InetAddress &peerAddr)
-            : loop_(checkLoopNotNull(loop))
-            , channel_(new Channel{loop,sockfd})
-            , socket_(new Socket{sockfd})
-            , localAddr_(localAddr)
-            , peerAddr_(peerAddr)
-            , highWaterMark_( 64 * 1024 * 1024)
-            , name_(nameArg)
-            , state_(StateE::kConnected)
-            , reading_(true)
+    : loop_(checkLoopNotNull(loop))
+    , channel_(new Channel{loop,sockfd})
+    , socket_(new Socket{sockfd})
+    , localAddr_(localAddr)
+    , peerAddr_(peerAddr)
+    , highWaterMark_( 64 * 1024 * 1024)
+    , name_(nameArg)
+    , state_(StateE::kConnected)
+    , reading_(true)
 {
     channel_->setReadCallback([this](Timestamp timestamp)->void{
         handleRead(timestamp);

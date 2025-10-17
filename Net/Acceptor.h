@@ -7,7 +7,7 @@
 
 class EventLoop;
 
-class Acceptor: public noncopyable
+class Acceptor: private noncopyable
 {
 public:
     using NewConnectionCallback=std::function<void(int sockfd,const InetAddress &)>;

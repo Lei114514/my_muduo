@@ -9,7 +9,7 @@
 class Channel;
 class EventLoop;
 
-class Poller: public noncopyable
+class Poller: private noncopyable
 {
 public:
     using ChannelList=std::vector<Channel*>;

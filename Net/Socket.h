@@ -4,7 +4,7 @@
 
 class InetAddress;
 
-class Socket: public noncopyable
+class Socket: private noncopyable
 {
 public:
     explicit Socket(int sockfd)

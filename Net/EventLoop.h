@@ -13,7 +13,7 @@
 class Poller;
 class Channel;
 
-class EventLoop: public noncopyable
+class EventLoop: private noncopyable
 {
 public:
     using Functor=std::function<void()>;

@@ -50,7 +50,7 @@ enum class LogLevel
     DEBUG, // 调试信息
 };
 
-class Logger: public noncopyable
+class Logger: private noncopyable
 {
 public:
     static Logger& instance();

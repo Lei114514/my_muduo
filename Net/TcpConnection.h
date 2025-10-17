@@ -37,7 +37,7 @@ public:
     void shutdown();
 
     void connectEstablished();
-    void connectDestoryed();
+    void connectDestroyed();
 
     void setConnectionCallback(ConnectionCallback &cb) {connectionCallback_ = cb; }
     void setMessageCallback(MessageCallback &cb) { messageCallback_ = cb;}

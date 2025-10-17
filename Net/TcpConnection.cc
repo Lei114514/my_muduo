@@ -236,7 +236,7 @@ void TcpConnection::connectEstablished()
 
     connectionCallback_(shared_from_this());
 }
-void TcpConnection::connectDestoryed()
+void TcpConnection::connectDestroyed()
 {
     if(state_==StateE::kConnected)
     {

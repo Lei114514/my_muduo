@@ -16,6 +16,7 @@
 #include "EventLoop.h"
 #include "Buffer.h"
 #include "TcpConnection.h"
+#include "TcpServer.h"
 
 #define IP "192.168.232.137"
 #define PORT 8899
@@ -25,12 +26,13 @@ using std::endl;
 
 void echoServer() 
 {
+    using ThreadInitCallback = std::function<void(EventLoop*)>;
     EventLoop* loop=new EventLoop{};
     InetAddress addr(PORT,IP);
-    Acceptor acceptor{loop,addr,true};
-    int fileFd=::open("../test/test.txt",O_RDONLY);  //在build目錄下cmake..
 
-    TcpConnectionPtr clientConnection=nullptr;
+    int fileFd=::open("../test/test.txt",O_RDONLY);  //fileSendFileLoop使用, 在build目錄下cmake..
+
+    TcpServer server(loop,addr,"server",TcpServer::Option::kReusePort);
 
     /*
     //測試send
@@ -42,9 +44,10 @@ void echoServer()
         tcpConnection->send(buf);
     };
     */
-
+    
     //測試sendFile
-    MessageCallback messageCallback=[&clientConnection,fileFd](const TcpConnectionPtr& tcpConnection,Buffer* buffer,Timestamp)->void{
+    
+    MessageCallback messageCallback=[fileFd](const TcpConnectionPtr& tcpConnection,Buffer* buffer,Timestamp)->void{
         std::string buf(buffer->peek(),buffer->readableBytes());
         buf+="!!!!";
         buffer->retrieve(buffer->readableBytes());
@@ -53,42 +56,26 @@ void echoServer()
         int tmpFd=open("../test/test.txt",O_RDONLY);
         int count=lseek(tmpFd,0,SEEK_END);
         close(tmpFd);
-        clientConnection->sendFile(fileFd,0,count);
+        tcpConnection->sendFile(fileFd,0,count);
     };
 
     ConnectionCallback connectionCallback=[](const TcpConnectionPtr &connection)->void{
         LOG_DEBUG("create TcpConnection");
     };
 
+    ThreadInitCallback threadInitCallback=[](EventLoop* loop)->void{
+        LOG_DEBUG("ThreadInitCallback");
+    };
+
     WriteCompleteCallback writeCompleteCallback=[](const TcpConnectionPtr &connection)->void{
         LOG_DEBUG("writeCompleteCallback");
     };
 
-    CloseCallback closeCallback=[](const TcpConnectionPtr& connect)->void{
-        LOG_DEBUG("CloseCallback");
-    };
-
-    auto newConnectionCallback=[&clientConnection,&loop,&messageCallback,&connectionCallback,&writeCompleteCallback,&closeCallback,fileFd](int fd,const InetAddress& peerAddr)->void
-    {
-        LOG_DEBUG("running newConnectionCallback");
-        clientConnection= std::make_shared<TcpConnection>(loop,
-                                                          "TcpConnection1",
-                                                          fd,
-                                                          InetAddress(PORT,IP),
-                                                          peerAddr);
-
-        clientConnection->setMessageCallback(messageCallback);
-        clientConnection->setConnectionCallback(connectionCallback);
-        clientConnection->setWriteCompleteCallback(writeCompleteCallback);
-        clientConnection->setCloseCallback(closeCallback);
-        clientConnection->connectEstablished();
-    };
-
-    cout<<"before setNewconnetionCallback"<<endl;
-    acceptor.setNewConnectionCallback(newConnectionCallback);
-    cout<<"after SetNewConnectionCallback"<<endl;
-    acceptor.listen();
-    cout<<"after listen"<<endl;
+    server.setConnectionCallback(connectionCallback);
+    server.setMessageCallback(messageCallback);
+    server.setThreadInitCallback(threadInitCallback);
+    server.setWriteCompleteCallback(writeCompleteCallback);
+    server.start();
 
     loop->loop();
     cout<<"server exit"<<endl;
@@ -119,7 +106,6 @@ void client()
     while(true)
     {
         ::write(fd,message.c_str(),message.length());
-        ::sleep(1);
 
         memset(buf,0,sizeof(buf));
         ::read(fd,buf,sizeof(buf));
@@ -128,17 +114,17 @@ void client()
         ::sleep(5);
     }
     */
-
+   
     //測試sendFile
     std::string begin="begin";
-    char buf[64*1024];
+    char buf[1024];
     ::write(fd,begin.c_str(),begin.length());
     while(true)
     {
         memset(buf,0,sizeof(buf));
         ::read(fd,buf,sizeof(buf)-1);
         cout<<buf<<endl;
-        ::sleep(5);
+        ::sleep(1);
     }
 
     ::close(fd);

@@ -2,6 +2,7 @@ set(BASE_SOURCES
     CurrentThread.cc
     Logger.cc    
     Timestamp.cc
+    Thread.cc
     #每實現一個就新增一個
 )
 

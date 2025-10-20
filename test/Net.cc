@@ -34,7 +34,7 @@ void echoServer()
 
     TcpServer server(loop,addr,"server",TcpServer::Option::kReusePort);
 
-    /*
+    
     //測試send
     MessageCallback messageCallback=[](const TcpConnectionPtr& tcpConnection,Buffer* buffer,Timestamp)->void{
         std::string buf(buffer->peek(),buffer->readableBytes());
@@ -43,10 +43,10 @@ void echoServer()
         cout<<"EchoServer receive:"<<buf<<endl;
         tcpConnection->send(buf);
     };
-    */
+    
     
     //測試sendFile
-    
+    /*
     MessageCallback messageCallback=[fileFd](const TcpConnectionPtr& tcpConnection,Buffer* buffer,Timestamp)->void{
         std::string buf(buffer->peek(),buffer->readableBytes());
         buf+="!!!!";
@@ -58,6 +58,7 @@ void echoServer()
         close(tmpFd);
         tcpConnection->sendFile(fileFd,0,count);
     };
+    */
 
     ConnectionCallback connectionCallback=[](const TcpConnectionPtr &connection)->void{
         LOG_DEBUG("create TcpConnection");
@@ -71,6 +72,7 @@ void echoServer()
         LOG_DEBUG("writeCompleteCallback");
     };
 
+    server.setThreadNum(2);
     server.setConnectionCallback(connectionCallback);
     server.setMessageCallback(messageCallback);
     server.setThreadInitCallback(threadInitCallback);
@@ -84,12 +86,14 @@ void echoServer()
 
 void client()
 {
+    static int clientNum=0;
     ::sleep(1);
     cout<<"running client"<<endl;
     int fd=socket(AF_INET,SOCK_STREAM,0);
     Socket sockfd(fd);
 
-    InetAddress addr(PORT+1,IP);
+    InetAddress addr(PORT+clientNum+1,IP);
+    ++clientNum;
     sockfd.bindAddress(addr);
 
     InetAddress peerAddr(PORT,IP);
@@ -99,13 +103,13 @@ void client()
         cout<<"connect error"<<endl;
     }
 
-    /*
     //測試send函數
-    std::string message="hello world ";
+    char message[1024];
+    snprintf(message,sizeof(message),"%s:hello world",addr.toIpPort().c_str());
     char buf[64*1024];
     while(true)
     {
-        ::write(fd,message.c_str(),message.length());
+        ::write(fd,message,::strlen(message));
 
         memset(buf,0,sizeof(buf));
         ::read(fd,buf,sizeof(buf));
@@ -113,8 +117,8 @@ void client()
         printf("receive message:%s\n",buf);
         ::sleep(5);
     }
-    */
    
+    /*
     //測試sendFile
     std::string begin="begin";
     char buf[1024];
@@ -126,6 +130,7 @@ void client()
         cout<<buf<<endl;
         ::sleep(1);
     }
+    */
 
     ::close(fd);
     cout<<"client exit"<<endl;
@@ -137,11 +142,15 @@ int main()
     {
         echoServer();
     });
-    std::thread c([](){
+    std::thread c1([](){
+        client();
+    });
+    std::thread c2([](){
         client();
     });
     s.join();
-    c.join();
+    c1.join();
+    c2.join();
     printf("thread exit\n");
     return 0;
 }

@@ -30,7 +30,6 @@ EventLoop* EventLoopThread::startLoop()
         cond_.wait(lock,[this]()->bool{return loop_!=nullptr;});
         loop=loop_;
     }
-    LOG_DEBUG("startLoop finish");
     return loop;
 }
 

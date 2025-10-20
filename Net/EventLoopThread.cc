@@ -3,7 +3,7 @@
 
 EventLoopThread::EventLoopThread(ThreadInitCallback cb,
                 const std::string& name)
-    : loop_()
+    : loop_(nullptr)
     , thread_([this](){threadFunc();},name)
     , exiting_(false)
     , mutex_()

@@ -10,6 +10,7 @@
 #include "Acceptor.h"
 #include "InetAddress.h"
 #include "Logger.h"
+#include "EventLoopThreadPool.h"
 
 static EventLoop* checkLoopNotNull(EventLoop* loop)
 {
@@ -27,9 +28,10 @@ TcpServer::TcpServer(EventLoop* loop
     : loop_(checkLoopNotNull(loop))
     , acceptor_(std::make_unique<Acceptor>(loop,listenAddr,(option==Option::kReusePort?1:0)))
     , ipPort_(listenAddr.toIpPort())
-    , nextConnId_(0)
+    , nextConnId_(1)
     , name_(name)
     , started_(false)
+    , threadPool_(std::make_shared<EventLoopThreadPool>(loop,name))
 {
     acceptor_->setNewConnectionCallback([this](int sockfd,const InetAddress& peerAddr)->void{
         newConnection(sockfd,peerAddr);
@@ -46,20 +48,27 @@ TcpServer::~TcpServer()
         });
     }
 }
+
+void TcpServer::setThreadNum(int numThreads)
+{
+    numThreads_=numThreads;
+    threadPool_->setThreadNum(numThreads_);
+}
+
 void TcpServer::start()
 {
     if(started_.fetch_add(1)==0)
     {
+        threadPool_->start(threadInitCallback_);
         loop_->runInLoop([this]()->void{
             acceptor_->listen();
-            threadInitCallback_(loop_);
         });
     }
 }
 
 void TcpServer::newConnection(int sockfd, const InetAddress& peerAddr)
 {
-    EventLoop* loop = loop_;
+    EventLoop* loop = threadPool_->getNextLoop();
 
     char buf[64];
     snprintf(buf,sizeof(buf),"-%s#%d",ipPort_.c_str(),nextConnId_);

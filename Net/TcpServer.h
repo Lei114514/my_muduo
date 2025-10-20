@@ -14,6 +14,7 @@ class Socket;
 class Channel;
 class Acceptor;  
 class InetAddress;
+class EventLoopThreadPool;
 
 class TcpServer
 {
@@ -37,6 +38,8 @@ public:
     void setMessageCallback(const MessageCallback &cb) { messageCallback_ = cb; }
     void setWriteCompleteCallback(const WriteCompleteCallback &cb) { writeCompleteCallback_ = cb; }
 
+    void setThreadNum(int numThreads);
+
     void start();
 private:
     using ConnectionMap=std::unordered_map<std::string,TcpConnectionPtr>;
@@ -49,14 +52,15 @@ private:
     std::unique_ptr<Acceptor> acceptor_;
     ConnectionMap connections_;
     const std::string ipPort_;
+    std::shared_ptr<EventLoopThreadPool> threadPool_;
+    ThreadInitCallback threadInitCallback_;
+    int numThreads_;
 
     int nextConnId_;
 
     const std::string name_;
     std::atomic_int started_;
     
-    ThreadInitCallback threadInitCallback_;
-
     ConnectionCallback connectionCallback_;
     MessageCallback messageCallback_;
     WriteCompleteCallback writeCompleteCallback_;

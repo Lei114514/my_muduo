@@ -11,6 +11,9 @@ set(NET_SOURCES
     Buffer.cc
     TcpConnection.cc
     TcpServer.cc
+
+    EventLoopThread.cc
+    EventLoopThreadPool.cc
     #每實現一個就新增一個
 )
 

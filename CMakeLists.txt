@@ -4,6 +4,7 @@ project(my_muduo CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# 輸出DEBUG日志
 add_compile_definitions(MYDEBUG)
 
 # cmake -DCMAKE_BUILD_TYPE=Debug .. 
@@ -27,5 +28,9 @@ add_subdirectory(Net)
 # target_link_libraries(reactor_test PRIVATE Net Base)
 
 # 測試Net板块的代碼
-add_executable(Net_test test/Net.cc)
-target_link_libraries(Net_test PRIVATE Net Base)
+# add_executable(Net_test test/Net.cc)
+# target_link_libraries(Net_test PRIVATE Net Base)
+
+# 測試EchoServer板块的代碼
+ add_executable(EchoServer_test test/EchoServer.cc)
+ target_link_libraries(EchoServer_test PRIVATE Net Base)

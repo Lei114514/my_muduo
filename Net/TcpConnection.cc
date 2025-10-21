@@ -33,6 +33,8 @@ TcpConnection::TcpConnection(EventLoop* loop
     , name_(nameArg)
     , state_(StateE::kConnected)
     , reading_(true)
+    , inputBuffer_()
+    , outputBuffer_()
 {
     channel_->setReadCallback([this](Timestamp timestamp)->void{
         handleRead(timestamp);

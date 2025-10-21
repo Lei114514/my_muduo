@@ -50,8 +50,37 @@ Reactor模型:
 
 
 ## **项目运行**
-
-
+安装基本工具
+```
+sudo apt-get update
+sudo apt-get install -y wget cmake build-essential unzip git
+```
+下载项目
+```
+git clone https://github.com/Lei114514/my_muduo.git
+```
+进入到my_muduo目录
+```
+cd my_muduo/
+```
+创建build目录, 同时进入build目录
+```
+mkdir build && cd build
+```
+生成Makefile并编译
+```
+cmake .. && make -j$(nproc)
+```
+第一个终端运行EchoServer程序
+```
+./bin/EchoServer_test
+```
+第二个终端运行Client程序
+```
+./bin/Client_test
+```
+在第二个终端中输入数据, EchoServer会返回数据
 
 ## **致谢**
 https://github.com/youngyangyang04/muduo-core
+

@@ -34,3 +34,5 @@ add_subdirectory(Net)
 # 測試EchoServer板块的代碼
  add_executable(EchoServer_test test/EchoServer.cc)
  target_link_libraries(EchoServer_test PRIVATE Net Base)
+
+ add_executable(Client_test test/client.cc)

@@ -33,7 +33,7 @@ public:
     bool connected() const { return state_ == StateE::kConnected; }
 
     void send(const std::string &buf);
-    void send(Buffer& buf);
+    void send(Buffer* buf);
     void sendFile(int fd,off_t offset,size_t count);
 
     void shutdown();

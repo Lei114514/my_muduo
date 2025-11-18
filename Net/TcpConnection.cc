@@ -57,19 +57,19 @@ TcpConnection::~TcpConnection()
     LOG_DEBUG("TcpConnect Destory, fd=%d, name=%s, state=%d",socket_->fd(),name_.c_str(),static_cast<int>(state_.load()));
 }
 
-void TcpConnection::send(Buffer& buf)
+void TcpConnection::send(Buffer* buf)
 {
     if(connected())
     {
         if(loop_->isInLoopThread())
         {
-            sendInLoop(buf.peek(),buf.readableBytes());
-            buf.retrieveAll();
+            sendInLoop(buf->peek(),buf->readableBytes());
+            buf->retrieveAll();
         }
         else 
         {
             std::shared_ptr<Buffer> new_buf = std::make_shared<Buffer>();
-            new_buf->swap(buf);
+            new_buf->swap(*buf);
 
             loop_->runInLoop([shared_this = shared_from_this(),
                               moved_buf = std::move(new_buf)] () mutable -> void

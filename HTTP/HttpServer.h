@@ -19,8 +19,7 @@ public:
     HttpServer(EventLoop* loop,
                const InetAddress& listenAddr,
                const std::string& name = "MyHttpServer");
-
-    ~HttpServer(); // 雖然可能是空的，但好的習慣是聲明它
+    ~HttpServer()=default; 
 
     /// @brief 啟動服務器（開始監聽）
     void start();
@@ -33,6 +32,8 @@ public:
     /// @brief 設置處理所有未找到路徑（404）的默認回調
     void setNotFoundCallback(const HttpCallback& cb);
 
+    void setThreadNum(int threadNum) { server_.setThreadNum(threadNum); }
+
 private:
     /// @brief TcpServer 的 onConnection 回調
     void onConnection(const TcpConnectionPtr& conn);
@@ -43,11 +44,7 @@ private:
     // 內部輔助函數，當請求解析完成後被調用
     void onRequest(const TcpConnectionPtr& conn, const HttpRequest& req);
 
-    TcpServer server_; // 組合 TcpServer，HttpServer 是一個應用層服務
-
-    // 路由表：存儲路徑到處理函數的映射
-    std::map<std::string, HttpCallback> router_;
-
-    // 默認的404處理回調
-    HttpCallback notFoundCallback_;
+    TcpServer server_; 
+    std::map<std::string, HttpCallback> router_;  // 路由表：存儲路徑到處理函數的映射
+    HttpCallback notFoundCallback_;  // 默認的404處理回調
 };

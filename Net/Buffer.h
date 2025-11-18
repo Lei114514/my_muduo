@@ -17,6 +17,13 @@ public:
     , writerIndex_(kCheapPrepend)
     {
     }
+                              
+    void swap(Buffer& buf)
+    {
+        buffer_.swap(buf.buffer_);
+        std::swap(readerIndex_,buf.readerIndex_);
+        std::swap(writerIndex_,buf.writerIndex_);
+    }
 
     size_t readableBytes() const {return writerIndex_ - readerIndex_; }
     size_t writableBytes() const {return buffer_.size() - writerIndex_; }

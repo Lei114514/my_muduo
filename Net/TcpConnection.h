@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 #include <atomic>
+#include <any>
 
 #include "InetAddress.h"
 #include "Timestamp.h"
@@ -32,12 +33,17 @@ public:
     bool connected() const { return state_ == StateE::kConnected; }
 
     void send(const std::string &buf);
+    void send(Buffer& buf);
     void sendFile(int fd,off_t offset,size_t count);
 
     void shutdown();
 
     void connectEstablished();
     void connectDestroyed();
+
+    void setContext(const std::any& context) { context_=context; }
+    const std::any& getContext() const { return context_; }
+    std::any* getMutableContext() { return &context_; }
 
     void setConnectionCallback(ConnectionCallback &cb) {connectionCallback_ = cb; }
     void setMessageCallback(MessageCallback &cb) { messageCallback_ = cb;}
@@ -79,6 +85,7 @@ private:
     const InetAddress peerAddr_;   
     Buffer inputBuffer_;
     Buffer outputBuffer_;
+    std::any context_;
     
     std::atomic<StateE> state_;
     const std::string name_;

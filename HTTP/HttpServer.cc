@@ -2,9 +2,9 @@
 #include "HttpResponse.h"
 #include "HttpRequest.h"
 #include "Timestamp.h"
-#include "TcpConnection.h"
+#include "../Net/TcpConnection.h"
 #include "Logger.h"
-#include "InetAddress.h"
+#include "../Net/InetAddress.h"
 
 HttpServer::HttpServer(EventLoop* loop,
             const InetAddress& listenAddr,

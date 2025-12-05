@@ -26,6 +26,8 @@ public:
     void addHeader(const std::string& key, const std::string& value) { headers_[key] = value; }
     void setContentType(const std::string& contentType) { addHeader("Content-Type",contentType); }
     void setBody(const std::string& body) { body_ = body; }
+
+    bool closeConnection() const { return closeConnection_; }
     
     void appendToBuffer(Buffer* buf) const ;
 private:

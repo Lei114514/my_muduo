@@ -20,6 +20,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(Base)
 add_subdirectory(Net)
+add_subdirectory(HTTP)
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 
@@ -32,7 +33,11 @@ add_subdirectory(Net)
 # target_link_libraries(Net_test PRIVATE Net Base)
 
 # 測試EchoServer板块的代碼
- add_executable(EchoServer_test test/EchoServer.cc)
- target_link_libraries(EchoServer_test PRIVATE Net Base)
+# add_executable(EchoServer_test test/EchoServer.cc)
+# target_link_libraries(EchoServer_test PRIVATE Net Base)
 
- add_executable(Client_test test/client.cc)
+# add_executable(Client_test test/client.cc)
+
+# 測試HTTP板块的代碼
+ add_executable(HTTP_test test/http.cc)
+ target_link_libraries(HTTP_test PRIVATE Net Base HTTP)

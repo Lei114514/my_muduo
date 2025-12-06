@@ -4,11 +4,10 @@
 
 void HttpResponse::setStatusCode(HttpResponse::HttpStatusCode code)
 {
-    
     statusCode_=code;
     switch (code)
     {
-    case HttpStatusCode::K200Ok:
+    case HttpStatusCode::k200Ok:
         setReasonPhrase("OK");
         break;
     case HttpStatusCode::k301MovedPermanently:

@@ -10,7 +10,7 @@ class HttpResponse
 public:
     enum HttpStatusCode{
         kUnknown,
-        K200Ok= 200,
+        k200Ok= 200,
         k301MovedPermanently = 301,
         k400BadRequest = 400,
         k404NotFound = 404,

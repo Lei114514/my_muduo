@@ -8,7 +8,7 @@
 
 HttpServer::HttpServer(EventLoop* loop,
             const InetAddress& listenAddr,
-            const std::string& name = "MyHttpServer")
+            const std::string& name)
     : server_(loop,listenAddr,name,TcpServer::Option::kReusePort)
 {
     server_.setConnectionCallback([this](const TcpConnectionPtr& conn)->void{
@@ -81,33 +81,33 @@ void HttpServer::onRequest(const TcpConnectionPtr& conn, const HttpRequest& req)
     // {
     //     closeConnection=true;
     // }
-    HttpResponse reponse{closeConnection};
+    HttpResponse response{closeConnection};
 
     auto it = router_.find(req.getPath());
     if(it==router_.end()){
         if(notFoundCallback_){
-            notFoundCallback_(req,&reponse);
+            notFoundCallback_(req,&response);
         }
         else 
         {
-            reponse.setStatusCode(HttpResponse::k404NotFound);
-            reponse.setContentType("text/html; charset=utf-8");
-            reponse.setBody("<html><head><title>404 Not Found</title></head>"
+            response.setStatusCode(HttpResponse::k404NotFound);
+            response.setContentType("text/html; charset=utf-8");
+            response.setBody("<html><head><title>404 Not Found</title></head>"
                          "<body><h1>404 Not Found</h1>"
                          "<p>The requested URL " + req.getPath() + " was not found on this server.</p>"
                          "</body></html>");
         }
     }
     else {
-        it->second(req,&reponse);
+        it->second(req,&response);
     }
 
     Buffer buf;
-    reponse.appendToBuffer(&buf);
+    response.appendToBuffer(&buf);
 
     conn->send(&buf);
 
-    if(reponse.closeConnection())
+    if(response.closeConnection())
     {
         conn->shutdown();
     }

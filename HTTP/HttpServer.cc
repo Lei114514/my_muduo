@@ -74,13 +74,13 @@ void HttpServer::onMessage(const TcpConnectionPtr& conn, Buffer* buf, Timestamp 
 
 void HttpServer::onRequest(const TcpConnectionPtr& conn, const HttpRequest& req)
 {
-    bool closeConnection=true;
-    // const std::string& connectionHeader = req.getHeader("Connection");
-    // if(connectionHeader == "close"||
-    //     (req.getVersion()=="HTTP/1.0" && connectionHeader != "Keep-Alive"))
-    // {
-    //     closeConnection=true;
-    // }
+    bool closeConnection=false;
+    const std::string& connectionHeader = req.getHeader("Connection");
+    if(connectionHeader == "close"||
+        (req.getVersion()=="HTTP/1.0" && connectionHeader != "Keep-Alive"))
+    {
+        closeConnection=true;
+    }
     HttpResponse response{closeConnection};
 
     auto it = router_.find(req.getPath());

@@ -43,6 +43,9 @@ private:
     // 內部輔助函數，當請求解析完成後被調用
     void onRequest(const TcpConnectionPtr& conn, const HttpRequest& req);
 
+    // TODO: 實現定時器來斷開不常用的連接
+    void onTime();
+
     TcpServer server_; 
     std::map<std::string, HttpCallback> router_;  // 路由表：存儲路徑到處理函數的映射
     HttpCallback notFoundCallback_;  // 默認的404處理回調
